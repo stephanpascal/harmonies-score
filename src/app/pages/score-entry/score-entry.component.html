@@ -1,0 +1,159 @@
+@if (score()) {
+<div class="page score-page">
+  <div class="player-header">
+    <span class="player-index">{{ playerIndex() + 1 }} / {{ scoreService.config().players.length }}</span>
+    <h2>{{ score()!.name }}</h2>
+    <div class="total-badge">{{ total() }} pts</div>
+    <button class="btn-new-game" (click)="newGame()" title="Nouvelle partie">✕</button>
+  </div>
+
+  <!-- ARBRES -->
+  <div class="card category-card">
+    <div class="category-header">
+      <span class="category-icon">🌳</span>
+      <span class="category-name">Arbres</span>
+      <span class="category-pts">{{ treePoints() }} pts</span>
+    </div>
+    <div class="rows">
+      <div class="score-row">
+        <span class="row-label">Taille 2 <em>(1 pt)</em></span>
+        <app-counter [value]="score()!.trees.size2" (changed)="updateTrees('size2', $event)" />
+      </div>
+      <div class="score-row">
+        <span class="row-label">Taille 3 <em>(3 pts)</em></span>
+        <app-counter [value]="score()!.trees.size3" (changed)="updateTrees('size3', $event)" />
+      </div>
+    </div>
+  </div>
+
+  <!-- MONTAGNES -->
+  <div class="card category-card">
+    <div class="category-header">
+      <span class="category-icon">⛰️</span>
+      <span class="category-name">Montagnes adjacentes</span>
+      <span class="category-pts">{{ mountainPoints() }} pts</span>
+    </div>
+    <p class="category-hint">Ne comptez que les montagnes adjacentes à au moins une autre montagne</p>
+    <div class="rows">
+      <div class="score-row">
+        <span class="row-label">Taille 1 <em>(1 pt)</em></span>
+        <app-counter [value]="score()!.mountains.size1" (changed)="updateMountains('size1', $event)" />
+      </div>
+      <div class="score-row">
+        <span class="row-label">Taille 2 <em>(3 pts)</em></span>
+        <app-counter [value]="score()!.mountains.size2" (changed)="updateMountains('size2', $event)" />
+      </div>
+      <div class="score-row">
+        <span class="row-label">Taille 3 <em>(7 pts)</em></span>
+        <app-counter [value]="score()!.mountains.size3" (changed)="updateMountains('size3', $event)" />
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAMPS -->
+  <div class="card category-card">
+    <div class="category-header">
+      <span class="category-icon">🌾</span>
+      <span class="category-name">Champs</span>
+      <span class="category-pts">{{ fieldPoints() }} pts</span>
+    </div>
+    <p class="category-hint">Groupes de ≥ 2 jetons jaunes connectés (5 pts chacun)</p>
+    <div class="rows">
+      <div class="score-row">
+        <span class="row-label">Nombre de champs</span>
+        <app-counter [value]="score()!.fields" (changed)="update({ fields: $event })" />
+      </div>
+    </div>
+  </div>
+
+  <!-- EAU -->
+  <div class="card category-card">
+    <div class="category-header">
+      @if (waterFace() === 'A') {
+        <span class="category-icon">💧</span>
+        <span class="category-name">Rivière (Face A)</span>
+      } @else {
+        <span class="category-icon">🏝️</span>
+        <span class="category-name">Îles (Face B)</span>
+      }
+      <span class="category-pts">{{ waterPoints() }} pts</span>
+    </div>
+    @if (waterFace() === 'A') {
+      <p class="category-hint">Longueur de la rivière la plus longue</p>
+      <div class="rows">
+        <div class="score-row">
+          <span class="row-label">Longueur</span>
+          <app-counter [value]="score()!.riverLength" (changed)="update({ riverLength: $event })" />
+        </div>
+      </div>
+      <div class="river-barème">
+        <span [class.active]="score()!.riverLength === 1">1→0pts</span>
+        <span [class.active]="score()!.riverLength === 2">2→2</span>
+        <span [class.active]="score()!.riverLength === 3">3→5</span>
+        <span [class.active]="score()!.riverLength === 4">4→8</span>
+        <span [class.active]="score()!.riverLength === 5">5→11</span>
+        <span [class.active]="score()!.riverLength === 6">6→15</span>
+        <span [class.active]="score()!.riverLength > 6">7+→+4/jeton</span>
+      </div>
+    } @else {
+      <p class="category-hint">Cases isolées par des jetons bleus (5 pts chacune)</p>
+      <div class="rows">
+        <div class="score-row">
+          <span class="row-label">Nombre d'îles</span>
+          <app-counter [value]="score()!.islands" [min]="1" (changed)="update({ islands: $event })" />
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- BÂTIMENTS -->
+  <div class="card category-card">
+    <div class="category-header">
+      <span class="category-icon">🏠</span>
+      <span class="category-name">Bâtiments</span>
+      <span class="category-pts">{{ buildingPoints() }} pts</span>
+    </div>
+    <p class="category-hint">Entourés d'au moins 3 couleurs différentes (5 pts chacun)</p>
+    <div class="rows">
+      <div class="score-row">
+        <span class="row-label">Nombre de bâtiments</span>
+        <app-counter [value]="score()!.buildings" (changed)="update({ buildings: $event })" />
+      </div>
+    </div>
+  </div>
+
+  <!-- CARTES ANIMAL -->
+  <div class="card category-card">
+    <div class="category-header">
+      <span class="category-icon">🦊</span>
+      <span class="category-name">Cartes Animal</span>
+      <span class="category-pts">{{ animalCardTotal() }} pts</span>
+    </div>
+    <p class="category-hint">Points de l'emplacement vide le plus bas de chaque carte</p>
+
+    @if (score()!.animalCards.length === 0) {
+      <p class="no-cards">Aucune carte — appuie sur + pour en ajouter</p>
+    }
+
+    <div class="animal-cards-list">
+      @for (card of score()!.animalCards; track $index) {
+        <div class="animal-card-row">
+          <span class="card-label">Carte {{ $index + 1 }}</span>
+          <app-counter [value]="card" (changed)="updateAnimalCard($index, $event)" />
+          <button class="btn-remove-card" (click)="removeAnimalCard($index)" title="Supprimer">✕</button>
+        </div>
+      }
+    </div>
+
+    <button class="btn-add-card" (click)="addAnimalCard()">+ Ajouter une carte</button>
+  </div>
+
+  <button class="btn-next" (click)="next()">
+    @if (isLastPlayer()) {
+      Voir les résultats 🏆
+    } @else {
+      Joueur suivant →
+    }
+  </button>
+</div>
+}

@@ -1,0 +1,70 @@
+<div class="page setup-page">
+  <div class="header">
+    <h1>🌿 Harmonies</h1>
+    <p class="subtitle">Compteur de points</p>
+  </div>
+
+  <div class="card">
+    <h2>Nombre de joueurs</h2>
+    <div class="player-count-selector">
+      @for (n of [1, 2, 3, 4]; track n) {
+        <button
+          class="count-btn"
+          [class.active]="playerCount() === n"
+          (click)="setPlayerCount(n)">
+          {{ n }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Prénoms</h2>
+    <div class="player-inputs">
+      @for (i of [0, 1, 2, 3]; track i) {
+        @if (i < playerCount()) {
+          <div class="player-input-row">
+            <span class="player-num">J{{ i + 1 }}</span>
+            <input
+              type="text"
+              class="name-input"
+              placeholder="Prénom du joueur {{ i + 1 }}"
+              [value]="playerNames()[i]"
+              (input)="updateName(i, $any($event.target).value)"
+            />
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Face du plateau</h2>
+    <div class="face-selector">
+      <button
+        class="face-btn"
+        [class.active]="waterFace() === 'A'"
+        (click)="waterFace.set('A')">
+        <span class="face-label">Face A</span>
+        <span class="face-desc">💧 Rivière</span>
+      </button>
+      <button
+        class="face-btn"
+        [class.active]="waterFace() === 'B'"
+        (click)="waterFace.set('B')">
+        <span class="face-label">Face B</span>
+        <span class="face-desc">🏝️ Îles</span>
+      </button>
+    </div>
+  </div>
+
+  @if (scoreService.hasSavedGame()) {
+    <button class="btn-resume" (click)="resume()">
+      ↩ Reprendre la partie en cours
+    </button>
+  }
+
+  <button class="btn-start" [disabled]="!canStart()" (click)="start()">
+    Commencer le décompte →
+  </button>
+</div>

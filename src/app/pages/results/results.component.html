@@ -1,0 +1,60 @@
+<div class="page results-page">
+  <div class="header">
+    <h1>🏆 Résultats</h1>
+  </div>
+
+  <!-- PODIUM -->
+  <div class="podium">
+    @for (player of ranked(); track player.score.name) {
+      <div class="podium-card" [class.winner]="player.rank === 1">
+        <span class="medal">{{ medal(player.rank) }}</span>
+        <span class="player-name">{{ player.score.name }}</span>
+        <span class="player-total">{{ player.total }} pts</span>
+      </div>
+    }
+  </div>
+
+  <!-- DÉTAIL PAR JOUEUR -->
+  @for (player of ranked(); track player.score.name) {
+    <div class="card detail-card">
+      <div class="detail-header">
+        <span>{{ medal(player.rank) }} {{ player.score.name }}</span>
+        <strong>{{ player.total }} pts</strong>
+      </div>
+      <div class="detail-rows">
+        <div class="detail-row">
+          <span>🌳 Arbres</span>
+          <span>{{ trees(player.score) }}</span>
+        </div>
+        <div class="detail-row">
+          <span>⛰️ Montagnes</span>
+          <span>{{ mountains(player.score) }}</span>
+        </div>
+        <div class="detail-row">
+          <span>🌾 Champs</span>
+          <span>{{ fields(player.score) }}</span>
+        </div>
+        <div class="detail-row">
+          @if (waterFace() === 'A') {
+            <span>💧 Rivière</span>
+          } @else {
+            <span>🏝️ Îles</span>
+          }
+          <span>{{ water(player.score) }}</span>
+        </div>
+        <div class="detail-row">
+          <span>🏠 Bâtiments</span>
+          <span>{{ buildings(player.score) }}</span>
+        </div>
+        <div class="detail-row">
+          <span>🦊 Cartes Animal</span>
+          <span>{{ animalTotal(player.score) }}</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <button class="btn-restart" (click)="restart()">
+    🔄 Nouvelle partie
+  </button>
+</div>

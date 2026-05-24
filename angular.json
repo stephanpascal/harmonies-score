@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "harmonies-claude": {
+    "harmonies-score": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -39,7 +39,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/harmonies-claude",
+            "outputPath": "dist/harmonies-score",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -72,7 +72,8 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json"
             },
             "development": {
               "optimization": false,
@@ -86,10 +87,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "harmonies-claude:build:production"
+              "buildTarget": "harmonies-score:build:production"
             },
             "development": {
-              "buildTarget": "harmonies-claude:build:development"
+              "buildTarget": "harmonies-score:build:development"
             }
           },
           "defaultConfiguration": "development"
